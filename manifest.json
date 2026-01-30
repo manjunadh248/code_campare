@@ -1,0 +1,55 @@
+{
+    "manifest_version": 3,
+    "name": "CodeCompare - CP Problem Matcher",
+    "version": "1.0.0",
+    "description": "Find same/similar competitive programming problems across LeetCode, GeeksforGeeks, Codeforces, and HackerRank with confidence scoring",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "https://clist.by/*",
+        "https://api-inference.huggingface.co/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://leetcode.com/problems/*",
+                "*://www.leetcode.com/problems/*",
+                "*://practice.geeksforgeeks.org/problems/*",
+                "*://www.geeksforgeeks.org/problems/*",
+                "*://codeforces.com/problemset/problem/*",
+                "*://codeforces.com/contest/*/problem/*",
+                "*://www.hackerrank.com/challenges/*"
+            ],
+            "js": [
+                "scorer.js",
+                "problemDatabase.js",
+                "api.js",
+                "mlSearch.js",
+                "matcher.js",
+                "ui.js",
+                "contentScript.js"
+            ],
+            "css": [
+                "styles.css"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "icons/*"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

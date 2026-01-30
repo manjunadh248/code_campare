@@ -1,0 +1,764 @@
+/**
+ * styles.css - BuyHatke-style UI for CodeCompare
+ * Modern glassmorphism design with dark theme
+ */
+
+/* CSS Variables for theming */
+:root {
+  --cc-primary: #6366f1;
+  --cc-primary-hover: #818cf8;
+  --cc-success: #22c55e;
+  --cc-warning: #eab308;
+  --cc-danger: #ef4444;
+  --cc-info: #3b82f6;
+  --cc-bg-dark: rgba(17, 24, 39, 0.95);
+  --cc-bg-card: rgba(31, 41, 55, 0.9);
+  --cc-bg-hover: rgba(55, 65, 81, 0.9);
+  --cc-text-primary: #f9fafb;
+  --cc-text-secondary: #9ca3af;
+  --cc-border: rgba(75, 85, 99, 0.5);
+  --cc-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --cc-blur: blur(16px);
+}
+
+/* Container - Floating Panel */
+#codecompare-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483647;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Toggle Button */
+#codecompare-toggle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cc-primary) 0%, #8b5cf6 100%);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--cc-shadow), 0 0 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+#codecompare-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: var(--cc-shadow), 0 0 30px rgba(99, 102, 241, 0.6);
+}
+
+#codecompare-toggle::before {
+  content: '⚡';
+  font-size: 24px;
+}
+
+#codecompare-toggle.active::before {
+  content: '✕';
+  font-size: 20px;
+}
+
+/* Badge showing match count */
+.cc-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--cc-danger);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Main Panel */
+#codecompare-panel {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 380px;
+  max-height: 70vh;
+  background: var(--cc-bg-dark);
+  backdrop-filter: var(--cc-blur);
+  -webkit-backdrop-filter: var(--cc-blur);
+  border-radius: 16px;
+  border: 1px solid var(--cc-border);
+  box-shadow: var(--cc-shadow);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#codecompare-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Panel Header */
+.cc-header {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--cc-primary) 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cc-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+}
+
+.cc-header-title::before {
+  content: '🔍';
+}
+
+.cc-header-stats {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Current Problem Info */
+.cc-current {
+  padding: 12px 16px;
+  background: var(--cc-bg-card);
+  border-bottom: 1px solid var(--cc-border);
+}
+
+.cc-current-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cc-text-secondary);
+  margin-bottom: 4px;
+}
+
+.cc-current-title {
+  font-weight: 500;
+  color: var(--cc-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Matches Container */
+.cc-matches {
+  max-height: calc(70vh - 140px);
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cc-matches::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cc-matches::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cc-matches::-webkit-scrollbar-thumb {
+  background: var(--cc-border);
+  border-radius: 3px;
+}
+
+/* Problem Card */
+.cc-card {
+  background: var(--cc-bg-card);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 8px;
+  border: 1px solid var(--cc-border);
+  transition: all 0.2s ease;
+}
+
+.cc-card:hover {
+  background: var(--cc-bg-hover);
+  border-color: var(--cc-primary);
+  transform: translateX(-4px);
+}
+
+.cc-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Platform Logo */
+.cc-platform-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--cc-bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cc-platform-logo.leetcode {
+  background: linear-gradient(135deg, #ffa116 0%, #ff6b00 100%);
+}
+
+.cc-platform-logo.geeksforgeeks {
+  background: linear-gradient(135deg, #2f8d46 0%, #1a6b2d 100%);
+}
+
+.cc-platform-logo.codeforces {
+  background: linear-gradient(135deg, #1a8bbb 0%, #0d5f8a 100%);
+}
+
+.cc-platform-logo.hackerrank {
+  background: linear-gradient(135deg, #00ea64 0%, #00b44d 100%);
+}
+
+.cc-problem-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cc-problem-title {
+  font-weight: 500;
+  color: var(--cc-text-primary);
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.cc-problem-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.cc-difficulty {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.cc-difficulty.easy,
+.cc-difficulty.basic,
+.cc-difficulty.school {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.cc-difficulty.medium {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fbbf24;
+}
+
+.cc-difficulty.hard {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.cc-platform-name {
+  color: var(--cc-text-secondary);
+}
+
+/* Score Section */
+.cc-score-section {
+  margin-bottom: 12px;
+}
+
+.cc-score-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.cc-score-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--cc-text-secondary);
+}
+
+.cc-score-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cc-score-same {
+  color: var(--cc-success);
+}
+
+.cc-score-similar {
+  color: var(--cc-warning);
+}
+
+.cc-score-related {
+  color: var(--cc-info);
+}
+
+.cc-score-low {
+  color: var(--cc-text-secondary);
+}
+
+/* Progress Bar */
+.cc-progress {
+  height: 6px;
+  background: var(--cc-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.cc-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.cc-progress-bar.cc-score-same {
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+
+.cc-progress-bar.cc-score-similar {
+  background: linear-gradient(90deg, #eab308, #fbbf24);
+}
+
+.cc-progress-bar.cc-score-related {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+/* Card Actions */
+.cc-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cc-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.cc-btn-visit {
+  background: var(--cc-primary);
+  color: white;
+}
+
+.cc-btn-visit:hover {
+  background: var(--cc-primary-hover);
+}
+
+.cc-btn-feedback {
+  background: var(--cc-bg-hover);
+  color: var(--cc-text-secondary);
+  padding: 8px;
+  flex: 0;
+  min-width: 40px;
+}
+
+.cc-btn-feedback:hover {
+  color: var(--cc-text-primary);
+}
+
+.cc-btn-feedback.confirm:hover {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+}
+
+.cc-btn-feedback.reject:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.cc-btn-feedback.active.confirm {
+  background: rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}
+
+.cc-btn-feedback.active.reject {
+  background: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+
+/* Tooltip */
+.cc-tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.cc-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  background: var(--cc-bg-dark);
+  border: 1px solid var(--cc-border);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--cc-text-secondary);
+  white-space: pre-line;
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.cc-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Empty State */
+.cc-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--cc-text-secondary);
+}
+
+.cc-empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.cc-empty-text {
+  font-size: 14px;
+}
+
+/* Loading State */
+.cc-loading {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.cc-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--cc-border);
+  border-top-color: var(--cc-primary);
+  border-radius: 50%;
+  animation: cc-spin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes cc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animations */
+@keyframes cc-fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cc-card {
+  animation: cc-fadeIn 0.3s ease forwards;
+}
+
+.cc-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.cc-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.cc-card:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.cc-card:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.cc-card:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+/* Settings Button */
+.cc-settings-btn,
+.cc-header-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  margin-left: 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s, transform 0.3s;
+}
+
+.cc-settings-btn:hover,
+.cc-header-btn:hover {
+  opacity: 1;
+}
+
+.cc-header-btn:active {
+  transform: rotate(180deg);
+}
+
+/* Settings Panel */
+.cc-settings-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--cc-bg-dark);
+  z-index: 100;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.cc-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--cc-text-primary);
+}
+
+.cc-settings-close {
+  background: transparent;
+  border: none;
+  color: var(--cc-text-secondary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.cc-settings-close:hover {
+  color: var(--cc-text-primary);
+}
+
+.cc-settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cc-settings-label {
+  font-size: 13px;
+  color: var(--cc-text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cc-settings-hint {
+  font-size: 11px;
+  color: var(--cc-text-secondary);
+}
+
+.cc-settings-hint a {
+  color: var(--cc-primary);
+  text-decoration: none;
+}
+
+.cc-settings-hint a:hover {
+  text-decoration: underline;
+}
+
+.cc-settings-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--cc-bg-card);
+  border: 1px solid var(--cc-border);
+  border-radius: 8px;
+  color: var(--cc-text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.cc-settings-input:focus {
+  border-color: var(--cc-primary);
+}
+
+.cc-settings-input::placeholder {
+  color: var(--cc-text-secondary);
+}
+
+.cc-settings-divider {
+  height: 1px;
+  background: var(--cc-border);
+  margin: 8px 0;
+}
+
+.cc-btn-primary {
+  background: var(--cc-primary);
+  color: white;
+}
+
+.cc-btn-primary:hover {
+  background: var(--cc-primary-hover);
+}
+
+.cc-btn-secondary {
+  background: var(--cc-bg-card);
+  color: var(--cc-text-secondary);
+  border: 1px solid var(--cc-border);
+}
+
+.cc-btn-secondary:hover {
+  background: var(--cc-bg-hover);
+  color: var(--cc-text-primary);
+}
+
+.cc-cache-stats {
+  font-size: 12px;
+  color: var(--cc-text-secondary);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* API Status Badge */
+.cc-api-status {
+  padding: 8px 16px;
+  background: var(--cc-bg-card);
+  border-bottom: 1px solid var(--cc-border);
+}
+
+.cc-api-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.cc-api-connected {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.cc-api-local {
+  background: rgba(156, 163, 175, 0.15);
+  color: #9ca3af;
+}
+
+/* Source Badge on Match Cards */
+.cc-source-badge {
+  font-size: 12px;
+  cursor: help;
+}
+
+/* Loading Text */
+.cc-loading-text {
+  color: var(--cc-text-secondary);
+  font-size: 13px;
+}
+
+/* Empty Hint */
+.cc-empty-hint {
+  font-size: 12px;
+  color: var(--cc-text-secondary);
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* Additional Platform Logos */
+.cc-platform-logo.codechef {
+  background: linear-gradient(135deg, #5b4638 0%, #3d2d24 100%);
+}
+
+.cc-platform-logo.atcoder {
+  background: linear-gradient(135deg, #9fa8a3 0%, #6b7875 100%);
+}
+
+/* ML Status Badge */
+.cc-api-ml {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+/* HuggingFace Status Styles */
+.cc-hf-status {
+  font-size: 12px;
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  margin-top: 8px;
+  background: var(--cc-bg-card);
+}
+
+.cc-status-ok {
+  color: #4ade80;
+}
+
+.cc-status-inactive {
+  color: #9ca3af;
+}
+
+.cc-status-error {
+  color: #f87171;
+}
+
+.cc-status-loading {
+  color: var(--cc-primary);
+}
+
+/* Semantic Score Badge in Tooltip */
+.cc-semantic-badge {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+  color: #a78bfa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* ML Source badge on cards */
+.cc-source-ml {
+  color: #a78bfa;
+}
