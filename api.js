@@ -7,6 +7,7 @@ const CodeCompareAPI = (() => {
     'use strict';
 
     const API_BASE = 'https://clist.by/api/v4';
+    const BACKEND_URL = 'http://localhost:3001'; // GFG scraping proxy
     const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
     const CACHE_KEY = 'codecompare_api_cache';
     const API_KEY_STORAGE = 'codecompare_api_key';
@@ -310,6 +311,47 @@ const CodeCompareAPI = (() => {
         };
     }
 
+    // Scrape a GeeksforGeeks problem via the backend proxy
+    // Returns { title, description, difficulty, tags, url, embeddingText } or null
+    async function scrapeGFG(gfgUrl) {
+        const cacheKey = `gfg_scrape:${gfgUrl}`;
+        const cached = getCached(cacheKey);
+        if (cached) return cached;
+
+        try {
+            const endpoint = `${BACKEND_URL}/api/scrape?url=${encodeURIComponent(gfgUrl)}`;
+            const response = await fetch(endpoint, {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (!response.ok) {
+                const errBody = await response.json().catch(() => ({}));
+                throw new Error(errBody.error || `HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.success && result.data) {
+                setCache(cacheKey, result.data);
+                return result.data;
+            }
+
+            throw new Error('Invalid response from backend');
+        } catch (e) {
+            console.error('[CodeCompare API] scrapeGFG failed:', e.message);
+            return null;
+        }
+    }
+
+    // Check if the backend proxy is reachable
+    async function isBackendAvailable() {
+        try {
+            const res = await fetch(`${BACKEND_URL}/health`, { signal: AbortSignal.timeout(3000) });
+            return res.ok;
+        } catch {
+            return false;
+        }
+    }
+
     // Initialize on load
     init();
 
@@ -323,7 +365,10 @@ const CodeCompareAPI = (() => {
         findSimilarProblems,
         clearCache,
         getCacheStats,
-        PLATFORM_RESOURCES
+        scrapeGFG,
+        isBackendAvailable,
+        PLATFORM_RESOURCES,
+        BACKEND_URL
     };
 })();
 

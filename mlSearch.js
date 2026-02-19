@@ -6,7 +6,8 @@
 const CodeCompareMLSearch = (() => {
     'use strict';
 
-    const HF_API_URL = 'https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2';
+    const HF_API_URL = 'https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2';
+    const BACKEND_URL = 'http://localhost:3001';
     const HF_KEY_STORAGE = 'codecompare_hf_api_key';
     const EMBEDDING_CACHE_KEY = 'codecompare_embeddings_cache';
     const CACHE_TTL = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -99,7 +100,7 @@ const CodeCompareMLSearch = (() => {
         saveEmbeddingCache(cache);
     }
 
-    // Generate embedding using Hugging Face API
+    // Generate embedding using backend proxy (avoids CSP/CORS issues)
     async function generateEmbedding(text) {
         if (!hfApiKey) {
             throw new Error('Hugging Face API key not configured');
@@ -112,21 +113,18 @@ const CodeCompareMLSearch = (() => {
             return cached;
         }
 
-        const response = await fetch(HF_API_URL, {
+        const response = await fetch(`${BACKEND_URL}/api/embeddings`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${hfApiKey}`,
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 inputs: text,
-                options: { wait_for_model: true }
+                hf_api_key: hfApiKey,
             })
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HF API error: ${response.status} - ${errorText}`);
+            const errBody = await response.json().catch(() => ({}));
+            throw new Error(errBody.error || `HF API error: ${response.status}`);
         }
 
         const embedding = await response.json();
@@ -158,22 +156,20 @@ const CodeCompareMLSearch = (() => {
             }
         }
 
-        // Fetch uncached embeddings
+        // Fetch uncached embeddings via backend proxy
         if (uncached.length > 0) {
-            const response = await fetch(HF_API_URL, {
+            const response = await fetch(`${BACKEND_URL}/api/embeddings`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${hfApiKey}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     inputs: uncached,
-                    options: { wait_for_model: true }
+                    hf_api_key: hfApiKey,
                 })
             });
 
             if (!response.ok) {
-                throw new Error(`HF API error: ${response.status}`);
+                const errBody = await response.json().catch(() => ({}));
+                throw new Error(errBody.error || `HF API error: ${response.status}`);
             }
 
             const embeddings = await response.json();

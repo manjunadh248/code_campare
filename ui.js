@@ -10,6 +10,7 @@ const CodeCompareUI = (() => {
   let matches = [];
   let isOpen = false;
   let isLoading = false;
+  let activeTab = 'matches'; // 'matches' or 'mentor'
 
   // Platform display info
   const PLATFORM_INFO = {
@@ -41,18 +42,33 @@ const CodeCompareUI = (() => {
           </div>
           <div class="cc-header-stats"></div>
         </div>
+        <div class="cc-tabs">
+          <button class="cc-tab active" data-tab="matches">🔍 Matches</button>
+          <button class="cc-tab" data-tab="mentor">🧠 Mentor</button>
+        </div>
         <div class="cc-current">
           <div class="cc-current-label">Current Problem</div>
           <div class="cc-current-title">Loading...</div>
         </div>
-        <div class="cc-api-status"></div>
-        <div class="cc-matches"></div>
+        <div id="cc-tab-matches">
+          <div class="cc-api-status"></div>
+          <div class="cc-matches"></div>
+        </div>
+        <div id="cc-tab-mentor" style="display:none;"></div>
         <div id="cc-settings-panel" class="cc-settings-panel" style="display: none;">
           <div class="cc-settings-header">
             <span>API Settings</span>
             <button id="cc-settings-close" class="cc-settings-close">×</button>
           </div>
           <div class="cc-settings-content">
+            <label class="cc-settings-label">
+              🧠 Gemini API Key (AI Mentor)
+              <span class="cc-settings-hint">Get free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a></span>
+            </label>
+            <input type="text" id="cc-gemini-settings-key" class="cc-settings-input" placeholder="AIzaSy...">
+            <button id="cc-save-gemini-key-settings" class="cc-btn cc-btn-primary">Save Gemini Key</button>
+            <div id="cc-gemini-status" class="cc-hf-status"></div>
+            <div class="cc-settings-divider"></div>
             <label class="cc-settings-label">
               🤖 Hugging Face API Key (ML Search)
               <span class="cc-settings-hint">Get free key at <a href="https://huggingface.co/settings/tokens" target="_blank">huggingface.co</a></span>
@@ -352,6 +368,39 @@ const CodeCompareUI = (() => {
     // Close settings
     document.getElementById('cc-settings-close')?.addEventListener('click', toggleSettings);
 
+    // Save Gemini API key from settings
+    const geminiSaveBtn = document.getElementById('cc-save-gemini-key-settings');
+    console.log('[CodeCompare UI] Gemini save btn found:', !!geminiSaveBtn);
+    geminiSaveBtn?.addEventListener('click', async () => {
+      console.log('[CodeCompare UI] Gemini save clicked');
+      const input = document.getElementById('cc-gemini-settings-key');
+      const statusEl = document.getElementById('cc-gemini-status');
+      const key = input?.value?.trim();
+      console.log('[CodeCompare UI] Key value:', key ? key.substring(0, 8) + '...' : 'empty');
+      if (!key) {
+        if (statusEl) statusEl.innerHTML = '<span class="cc-status-error">❌ Please enter a key first</span>';
+        return;
+      }
+
+      // Save via CodeCompareMentor if available
+      if (typeof CodeCompareMentor !== 'undefined') {
+        await CodeCompareMentor.setApiKey(key);
+      }
+      // Also save directly to storage as backup
+      try {
+        if (typeof chrome !== 'undefined' && chrome.storage) {
+          await chrome.storage.local.set({ 'codecompare_gemini_key': key });
+        } else {
+          localStorage.setItem('codecompare_gemini_key', key);
+        }
+      } catch (e) { console.warn('[CodeCompare UI] Storage fallback error:', e); }
+
+      if (statusEl) {
+        statusEl.innerHTML = '<span class="cc-status-ok">✅ Gemini key saved! AI Mentor is enabled.</span>';
+      }
+      alert('Gemini API key saved! Switch to the Mentor tab to use it.');
+    });
+
     // Save HuggingFace API key
     document.getElementById('cc-save-hf-api-key')?.addEventListener('click', async () => {
       const input = document.getElementById('cc-hf-api-key-input');
@@ -455,6 +504,19 @@ const CodeCompareUI = (() => {
     // Attach settings listeners
     attachSettingsListeners();
 
+    // Attach tab listeners
+    attachTabListeners();
+
+    // Initialize mentor panel
+    if (typeof CodeCompareMentor !== 'undefined') {
+      CodeCompareMentor.setProblem(problem);
+      const mentorTab = document.getElementById('cc-tab-mentor');
+      if (mentorTab) {
+        mentorTab.innerHTML = CodeCompareMentor.renderMentorPanel();
+        CodeCompareMentor.attachListeners();
+      }
+    }
+
     // Auto-open if there are matches (or loading)
     if (matches.length > 0 || isLoading) {
       setTimeout(() => {
@@ -497,7 +559,28 @@ const CodeCompareUI = (() => {
     }
   }
 
-  return { init, updateMatches, refresh, togglePanel };
+  // ─── Tab switching ─────────────────────────────────────────────
+  function switchTab(tab) {
+    activeTab = tab;
+    const matchesTab = document.getElementById('cc-tab-matches');
+    const mentorTab = document.getElementById('cc-tab-mentor');
+    const tabs = document.querySelectorAll('.cc-tab');
+
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.dataset.tab === tab);
+    });
+
+    if (matchesTab) matchesTab.style.display = tab === 'matches' ? '' : 'none';
+    if (mentorTab) mentorTab.style.display = tab === 'mentor' ? '' : 'none';
+  }
+
+  function attachTabListeners() {
+    document.querySelectorAll('.cc-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+  }
+
+  return { init, updateMatches, refresh, togglePanel, switchTab };
 })();
 
 if (typeof window !== 'undefined') window.CodeCompareUI = CodeCompareUI;
