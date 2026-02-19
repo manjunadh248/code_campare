@@ -762,3 +762,235 @@
 .cc-source-ml {
   color: #a78bfa;
 }
+
+/* ─── Tab Bar ──────────────────────────────────────────────────────── */
+.cc-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--cc-border);
+  background: var(--cc-bg-card);
+}
+
+.cc-tab {
+  flex: 1;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--cc-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cc-tab:hover {
+  color: var(--cc-text-primary);
+  background: var(--cc-bg-hover);
+}
+
+.cc-tab.active {
+  color: var(--cc-text-primary);
+  border-bottom-color: var(--cc-primary);
+}
+
+/* ─── Mentor Panel ─────────────────────────────────────────────────── */
+.cc-mentor-panel {
+  padding: 12px;
+}
+
+.cc-mentor-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cc-mentor-hint-row,
+.cc-mentor-action-row {
+  display: flex;
+  gap: 6px;
+}
+
+.cc-mentor-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: 1px solid var(--cc-border);
+  border-radius: 10px;
+  background: var(--cc-bg-card);
+  color: var(--cc-text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.cc-mentor-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.cc-mentor-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cc-mentor-btn.active {
+  border-color: var(--cc-primary);
+  background: rgba(99, 102, 241, 0.15);
+}
+
+/* Hint level colors */
+.cc-mentor-hint1 {
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.cc-mentor-hint1:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+}
+
+.cc-mentor-hint1.active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #22c55e;
+}
+
+.cc-mentor-hint2 {
+  border-color: rgba(234, 179, 8, 0.4);
+}
+
+.cc-mentor-hint2:hover:not(:disabled) {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: #eab308;
+}
+
+.cc-mentor-hint2.active {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: #eab308;
+}
+
+.cc-mentor-hint3 {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.cc-mentor-hint3:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+.cc-mentor-hint3.active {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #ef4444;
+}
+
+.cc-mentor-analysis {
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.cc-mentor-analysis:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+}
+
+.cc-mentor-analysis.active {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #3b82f6;
+}
+
+.cc-mentor-logic {
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.cc-mentor-logic:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: #a855f7;
+}
+
+.cc-mentor-logic.active {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: #a855f7;
+}
+
+.cc-mentor-bf {
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+.cc-mentor-bf:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: #f97316;
+}
+
+.cc-mentor-bf.active {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: #f97316;
+}
+
+/* ─── Mentor Response ──────────────────────────────────────────────── */
+.cc-mentor-response {
+  min-height: 40px;
+}
+
+.cc-mentor-result {
+  padding: 14px;
+  background: var(--cc-bg-card);
+  border: 1px solid var(--cc-border);
+  border-radius: 12px;
+  color: var(--cc-text-primary);
+  font-size: 13px;
+  line-height: 1.7;
+  animation: cc-fadeIn 0.3s ease;
+}
+
+.cc-mentor-result strong {
+  color: var(--cc-primary-hover);
+}
+
+.cc-mentor-blocked {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.cc-mentor-error {
+  padding: 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 12px;
+  color: #f87171;
+  font-size: 13px;
+  text-align: center;
+}
+
+.cc-mentor-loading {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+/* ─── Mentor Key Prompt ────────────────────────────────────────────── */
+.cc-mentor-key-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.cc-mentor-key-icon {
+  font-size: 36px;
+  opacity: 0.8;
+}
+
+.cc-mentor-key-text {
+  color: var(--cc-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cc-mentor-key-prompt .cc-settings-input {
+  max-width: 280px;
+}
+
+.cc-mentor-key-prompt .cc-btn {
+  max-width: 200px;
+  width: 100%;
+}

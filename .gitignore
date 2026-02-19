@@ -1,0 +1,5 @@
+node_modules/
+.env
+
+# Persistent mentor response cache (auto-generated, do not commit)
+.mentor_cache.json
